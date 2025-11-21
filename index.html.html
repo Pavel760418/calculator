@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор Юнит-Экономики</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f0f0; padding: 20px; color: #333; }
+
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { text-align: center; color: #2c5aa0; margin-bottom: 25px; font-size: 24px; }
+
+        .section { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section-title { font-size: 16px; font-weight: 700; color: #2c5aa0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #2c5aa0; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #555; }
+        input, select { width: 100%; padding: 10px 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.3s; }
+        input:focus, select:focus { outline: none; border-color: #2c5aa0; box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1); }
+        input[type="number"] { text-align: right; }
+
+        .button-group { display: flex; gap: 15px; margin-top: 25px; }
+        button { flex: 1; padding: 14px 20px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-calculate { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-calculate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5); }
+        .btn-clear { background: #f0f0f0; color: #555; border: 2px solid #ddd; }
+        .btn-clear:hover { background: #e8e8e8; }
+
+        .results-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px; }
+        @media (max-width: 768px) { .results-grid { grid-template-columns: 1fr; } }
+
+        .result-card { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 10px; padding: 20px; }
+        .result-card-title { font-size: 14px; font-weight: 700; color: #2c5aa0; margin-bottom: 15px; }
+
+        .result-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .result-table tr { border-bottom: 1px solid #d0d7e0; }
+        .result-table tr:last-child { border-bottom: none; }
+        .result-table td { padding: 10px 5px; }
+        .result-table td:first-child { font-weight: 500; color: #555; }
+        .result-table td:last-child { text-align: right; font-weight: 600; color: #2c5aa0; font-family: 'Courier New', monospace; }
+
+        .summary-card { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 10px; padding: 25px; text-align: center; margin-top: 20px; }
+        .summary-value { font-size: 32px; font-weight: 800; margin: 10px 0; }
+        .summary-value.positive { color: #10b981; }
+        .summary-value.negative { color: #ef4444; }
+
+        .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 10px; }
+        .status-excellent { background: #10b981; color: white; }
+        .status-good { background: #3b82f6; color: white; }
+        .status-warning { background: #f59e0b; color: white; }
+        .status-danger { background: #ef4444; color: white; }
+
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        .comparison-table th { background: #2c5aa0; color: white; padding: 12px; text-align: left; font-weight: 600; }
+        .comparison-table td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
+        .comparison-table tr:hover { background: #f9fafb; }
+        .comparison-table tr.best { background: #d1fae5; font-weight: 600; }
+
+        .info-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 6px; margin-top: 20px; font-size: 13px; color: #1e40af; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Калькулятор Юнит-Экономики Маркетплейсов</h1>
+
+        <div class="section">
+            <div class="section-title">📝 Исходные данные</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Наименование товара</label>
+                    <input type="text" id="productName" placeholder="Например: спрей_женский_6шт">
+                </div>
+                <div class="form-group">
+                    <label>Артикул продавца</label>
+                    <input type="text" id="article" placeholder="ART-001">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Закупочная цена (₽)</label>
+                    <input type="number" id="costPrice" min="0" step="1" value="472">
+                </div>
+                <div class="form-group">
+                    <label>Цена продажи до СПП (₽)</label>
+                    <input type="number" id="salePrice" min="0" step="1" value="1890">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Вес товара (кг)</label>
+                    <input type="number" id="weight" min="0" step="0.01" value="0.45">
+                </div>
+                <div class="form-group">
+                    <label>Объем товара (литр)</label>
+                    <input type="number" id="volume" min="0" step="0.01" value="1.2">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Маркетплейс</label>
+                    <select id="marketplace">
+                        <option>Wildberries</option>
+                        <option>Ozon</option>
+                        <option>Яндекс Маркет</option>
+                        <option>Мегамаркет</option>
+                        <option>AliExpress</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Схема поставки</label>
+                    <select id="scheme">
+                        <option>FBS</option>
+                        <option>FBO</option>
+                        <option>DBS</option>
+                        <option>Реализация</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Налоговый режим</label>
+                    <select id="taxRegime">
+                        <option>УСН Доходы 6%</option>
+                        <option selected>УСН Д-Р 15%</option>
+                        <option>ОСН 20%</option>
+                        <option>Патент 6%</option>
+                        <option>Самозанятость 4%</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Комиссия МП, % (пусто = авто)</label>
+                    <input type="number" id="customCommission" min="0" max="50" step="0.1" placeholder="Автоматически">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ДРР (Доля Рекламных Расходов), %</label>
+                    <input type="number" id="drr" min="0" max="50" step="0.1" value="12">
+                </div>
+                <div class="form-group">
+                    <label>Выкуп, %</label>
+                    <input type="number" id="buyout" min="50" max="100" step="1" value="85">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-calculate" onclick="calculate()">🔄 Рассчитать</button>
+                <button class="btn-clear" onclick="clearForm()">✕ Очистить</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📊 Результаты расчета</div>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-card-title">💰 Выручка и комиссии</div>
+                    <table class="result-table">
+                        <tr><td>Цена продажи</td><td id="r_salePrice">0 ₽</td></tr>
+                        <tr><td>Комиссия МП</td><td id="r_commission">0 ₽</td></tr>
+                        <tr><td>Эквайринг (2%)</td><td id="r_acquiring">0 ₽</td></tr>
+                        <tr><td>Чистая выручка</td><td id="r_netRevenue">0 ₽</td></tr>
+                    </table>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-card-title">🚚 Логистика</div>
+                    <table class="result-table">
+                        <tr><td>К маркетплейсу</td><td id="r_logToMp">0 ₽</td></tr>
+                        <tr><td>От маркетплейса</td><td id="r_logFromMp">0 ₽</td></tr>
+                        <tr><td>Хранение 15 дн</td><td id="r_storage">0 ₽</td></tr>
+                        <tr><td>Итого логистика</td><td id="r_totalLogistics">0 ₽</td></tr>
+                    </table>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-card-title">📦 Себестоимость</div>
+                    <table class="result-table">
+                        <tr><td>Закупочная цена</td><td id="r_costPrice">0 ₽</td></tr>
+                        <tr><td>Работа (3%)</td><td id="r_work">0 ₽</td></tr>
+                        <tr><td>Проценты (18%)</td><td id="r_creditPercent">0 ₽</td></tr>
+                        <tr><td>Полная себестоимость</td><td id="r_fullCost">0 ₽</td></tr>
+                    </table>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-card-title">💸 Прочие расходы</div>
+                    <table class="result-table">
+                        <tr><td>Реклама (ДРР)</td><td id="r_advertising">0 ₽</td></tr>
+                        <tr><td>Возвраты</td><td id="r_returns">0 ₽</td></tr>
+                        <tr><td>Брак (2%)</td><td id="r_defect">0 ₽</td></tr>
+                        <tr><td>Налог</td><td id="r_tax">0 ₽</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div style="font-size: 14px; color: #555; margin-bottom: 10px;">Прибыль с рекламой</div>
+                <div class="summary-value" id="profitValue">0 ₽</div>
+                <div style="font-size: 13px; color: #777;">Маржинальность: <strong id="marginalityValue">0%</strong></div>
+                <div class="status-badge" id="statusBadge">-</div>
+            </div>
+
+            <div class="results-grid" style="margin-top: 20px;">
+                <div class="result-card">
+                    <div class="result-card-title">БЕЗ РЕКЛАМЫ</div>
+                    <table class="result-table">
+                        <tr><td>Прибыль</td><td id="r_profitNoAd">0 ₽</td></tr>
+                        <tr><td>Маржинальность</td><td id="r_marginalityNoAd">0%</td></tr>
+                        <tr><td>ROI</td><td id="r_roiNoAd">0%</td></tr>
+                    </table>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-card-title">С РЕКЛАМОЙ</div>
+                    <table class="result-table">
+                        <tr><td>Прибыль</td><td id="r_profitWithAd">0 ₽</td></tr>
+                        <tr><td>Маржинальность</td><td id="r_marginalityWithAd">0%</td></tr>
+                        <tr><td>ROI</td><td id="r_roiWithAd">0%</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">⚖️ Сравнение схем поставки</div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Схема</th>
+                        <th>Маржинальность</th>
+                        <th>Прибыль</th>
+                        <th>Комиссия МП</th>
+                        <th>Логистика</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonBody"></tbody>
+            </table>
+        </div>
+
+        <div class="info-box">
+            💡 <strong>Совет:</strong> Маржинальность ≥20% считается отличным показателем для масштабирования. 
+            Показатели 10-20% требуют оптимизации расходов на рекламу и логистику.
+        </div>
+    </div>
+
+    <script>
+        const commissions = {
+            'Wildberries': {'FBS': 0.08, 'FBO': 0.08, 'DBS': 0.10, 'Реализация': 0.25},
+            'Ozon': {'FBS': 0.10, 'FBO': 0.10, 'DBS': 0.12, 'Реализация': 0.27},
+            'Яндекс Маркет': {'FBS': 0.13, 'FBO': 0.13, 'DBS': 0.15, 'Реализация': 0.30},
+            'Мегамаркет': {'FBS': 0.13, 'FBO': 0.13, 'DBS': 0.15, 'Реализация': 0.28},
+            'AliExpress': {'FBS': 0.07, 'FBO': 0.07, 'DBS': 0.09, 'Реализация': 0.20}
+        };
+
+        const logisticsTo = [{max: 0.5, cost: 50}, {max: 1, cost: 80}, {max: 3, cost: 120}, {max: 5, cost: 180}, {max: 10, cost: 250}, {max: 999, cost: 350}];
+        const logisticsFrom = [{max: 0.5, cost: 70}, {max: 1, cost: 100}, {max: 3, cost: 150}, {max: 5, cost: 220}, {max: 10, cost: 300}, {max: 999, cost: 400}];
+        const acceptance = [{max: 0.5, cost: 10}, {max: 1, cost: 15}, {max: 3, cost: 20}, {max: 5, cost: 25}, {max: 10, cost: 30}, {max: 999, cost: 40}];
+
+        function getLogisticsCost(weight, table) {
+            for (let item of table) if (weight <= item.max) return item.cost;
+            return table[table.length - 1].cost;
+        }
+
+        function formatCurrency(value) { return Math.round(value).toLocaleString('ru-RU') + ' ₽'; }
+        function formatPercent(value) { return (Math.round(value * 10) / 10).toFixed(1) + '%'; }
+
+        function calculate() {
+            const costPrice = parseFloat(document.getElementById('costPrice').value) || 0;
+            const salePrice = parseFloat(document.getElementById('salePrice').value) || 0;
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const volume = parseFloat(document.getElementById('volume').value) || 0;
+            const marketplace = document.getElementById('marketplace').value;
+            const scheme = document.getElementById('scheme').value;
+            const taxRegime = document.getElementById('taxRegime').value;
+            const customCommission = parseFloat(document.getElementById('customCommission').value);
+            const drr = parseFloat(document.getElementById('drr').value) || 0;
+            const buyout = parseFloat(document.getElementById('buyout').value) || 85;
+
+            let commission = (!isNaN(customCommission) && customCommission > 0) ? customCommission / 100 : commissions[marketplace][scheme];
+            const commissionCost = salePrice * commission;
+            const acquiring = salePrice * 0.02;
+            const netRevenue = salePrice - commissionCost - acquiring;
+
+            const logToMp = (scheme === 'FBS' || scheme === 'FBO' || scheme === 'DBS') ? getLogisticsCost(weight, logisticsTo) : 0;
+            const logFromMp = (scheme === 'FBO' || scheme === 'Реализация') ? getLogisticsCost(weight, logisticsFrom) : 0;
+            const storage = volume * 15 * 0.3;
+            const packing = 15;
+            const acceptanceCost = (scheme === 'FBO' || scheme === 'Реализация') ? getLogisticsCost(weight, acceptance) : 0;
+            const totalLogistics = logToMp + logFromMp + storage + packing + acceptanceCost;
+
+            const work = costPrice * 0.03;
+            const creditPercent = (costPrice + work) * 0.18 / 24;
+            const fullCost = costPrice + work + creditPercent;
+
+            const advertising = salePrice * (drr / 100);
+            const returns = fullCost * ((100 - buyout) / 100);
+            const defect = fullCost * 0.02;
+            const fines = 10;
+            const management = 170000 / 3000;
+
+            const totalExpensesNoAd = totalLogistics + fullCost + returns + defect + fines + management;
+            let tax = 0;
+            if (taxRegime === 'УСН Доходы 6%') tax = netRevenue * 0.06;
+            else if (taxRegime === 'УСН Д-Р 15%') tax = Math.max((netRevenue - totalExpensesNoAd) * 0.15, 0);
+            else if (taxRegime === 'ОСН 20%') tax = Math.max((netRevenue - totalExpensesNoAd) * 0.20, 0);
+            else if (taxRegime === 'Патент 6%') tax = salePrice * 0.06;
+            else if (taxRegime === 'Самозанятость 4%') tax = netRevenue * 0.04;
+
+            const totalExpensesNoAdFinal = totalExpensesNoAd + tax;
+            const totalExpensesWithAd = totalExpensesNoAdFinal + advertising;
+
+            const profitNoAd = netRevenue - totalExpensesNoAdFinal;
+            const profitWithAd = netRevenue - totalExpensesWithAd;
+            const marginalityNoAd = (profitNoAd / netRevenue) * 100;
+            const marginalityWithAd = (profitWithAd / netRevenue) * 100;
+            const roiNoAd = (profitNoAd / fullCost) * 100;
+            const roiWithAd = (profitWithAd / fullCost) * 100;
+
+            document.getElementById('r_salePrice').textContent = formatCurrency(salePrice);
+            document.getElementById('r_commission').textContent = formatCurrency(commissionCost);
+            document.getElementById('r_acquiring').textContent = formatCurrency(acquiring);
+            document.getElementById('r_netRevenue').textContent = formatCurrency(netRevenue);
+            document.getElementById('r_logToMp').textContent = formatCurrency(logToMp);
+            document.getElementById('r_logFromMp').textContent = formatCurrency(logFromMp);
+            document.getElementById('r_storage').textContent = formatCurrency(storage);
+            document.getElementById('r_totalLogistics').textContent = formatCurrency(totalLogistics);
+            document.getElementById('r_costPrice').textContent = formatCurrency(costPrice);
+            document.getElementById('r_work').textContent = formatCurrency(work);
+            document.getElementById('r_creditPercent').textContent = formatCurrency(creditPercent);
+            document.getElementById('r_fullCost').textContent = formatCurrency(fullCost);
+            document.getElementById('r_advertising').textContent = formatCurrency(advertising);
+            document.getElementById('r_returns').textContent = formatCurrency(returns);
+            document.getElementById('r_defect').textContent = formatCurrency(defect);
+            document.getElementById('r_tax').textContent = formatCurrency(tax);
+
+            document.getElementById('r_profitNoAd').textContent = formatCurrency(profitNoAd);
+            document.getElementById('r_marginalityNoAd').textContent = formatPercent(marginalityNoAd);
+            document.getElementById('r_roiNoAd').textContent = formatPercent(roiNoAd);
+
+            document.getElementById('r_profitWithAd').textContent = formatCurrency(profitWithAd);
+            document.getElementById('r_marginalityWithAd').textContent = formatPercent(marginalityWithAd);
+            document.getElementById('r_roiWithAd').textContent = formatPercent(roiWithAd);
+
+            const profitValueEl = document.getElementById('profitValue');
+            profitValueEl.textContent = formatCurrency(profitWithAd);
+            profitValueEl.className = 'summary-value ' + (profitWithAd >= 0 ? 'positive' : 'negative');
+
+            document.getElementById('marginalityValue').textContent = formatPercent(marginalityWithAd);
+
+            const statusBadge = document.getElementById('statusBadge');
+            if (marginalityWithAd >= 20) {
+                statusBadge.textContent = '✅ ОТЛИЧНО';
+                statusBadge.className = 'status-badge status-excellent';
+            } else if (marginalityWithAd >= 15) {
+                statusBadge.textContent = '👍 ХОРОШО';
+                statusBadge.className = 'status-badge status-good';
+            } else if (marginalityWithAd >= 10) {
+                statusBadge.textContent = '⚠️ НОРМА';
+                statusBadge.className = 'status-badge status-warning';
+            } else {
+                statusBadge.textContent = '❌ УБЫТОЧНО';
+                statusBadge.className = 'status-badge status-danger';
+            }
+
+            const schemes = ['FBS', 'FBO', 'DBS', 'Реализация'];
+            let comparisonHTML = '';
+            let bestMarginality = -999;
+            let bestScheme = '';
+
+            for (let s of schemes) {
+                const logToMpS = (s === 'FBS' || s === 'FBO' || s === 'DBS') ? getLogisticsCost(weight, logisticsTo) : 0;
+                const logFromMpS = (s === 'FBO' || s === 'Реализация') ? getLogisticsCost(weight, logisticsFrom) : 0;
+                const acceptanceS = (s === 'FBO' || s === 'Реализация') ? getLogisticsCost(weight, acceptance) : 0;
+                const logisticsS = logToMpS + logFromMpS + storage + packing + acceptanceS;
+                const commissionS = commissions[marketplace][s];
+                const commissionCostS = salePrice * commissionS;
+                const netRevenueS = salePrice - commissionCostS - acquiring;
+                const totalExpensesS = logisticsS + fullCost + returns + defect + fines + management;
+
+                let taxS = 0;
+                if (taxRegime === 'УСН Доходы 6%') taxS = netRevenueS * 0.06;
+                else if (taxRegime === 'УСН Д-Р 15%') taxS = Math.max((netRevenueS - totalExpensesS) * 0.15, 0);
+                else if (taxRegime === 'ОСН 20%') taxS = Math.max((netRevenueS - totalExpensesS) * 0.20, 0);
+                else if (taxRegime === 'Патент 6%') taxS = salePrice * 0.06;
+                else if (taxRegime === 'Самозанятость 4%') taxS = netRevenueS * 0.04;
+
+                const totalExpensesSFinal = totalExpensesS + taxS + advertising;
+                const profitS = netRevenueS - totalExpensesSFinal;
+                const marginalityS = (profitS / netRevenueS) * 100;
+
+                if (marginalityS > bestMarginality) {
+                    bestMarginality = marginalityS;
+                    bestScheme = s;
+                }
+
+                const rowClass = s === bestScheme ? ' best' : '';
+                comparisonHTML += `<tr class="${rowClass}"><td>${s}</td><td>${formatPercent(marginalityS)}</td><td>${formatCurrency(profitS)}</td><td>${formatPercent(commissionS * 100)}</td><td>${formatCurrency(logisticsS)}</td></tr>`;
+            }
+
+            document.getElementById('comparisonBody').innerHTML = comparisonHTML;
+        }
+
+        function clearForm() {
+            document.getElementById('productName').value = '';
+            document.getElementById('article').value = '';
+            document.getElementById('costPrice').value = '472';
+            document.getElementById('salePrice').value = '1890';
+            document.getElementById('weight').value = '0.45';
+            document.getElementById('volume').value = '1.2';
+            document.getElementById('marketplace').selectedIndex = 0;
+            document.getElementById('scheme').selectedIndex = 0;
+            document.getElementById('taxRegime').selectedIndex = 1;
+            document.getElementById('customCommission').value = '';
+            document.getElementById('drr').value = '12';
+            document.getElementById('buyout').value = '85';
+        }
+
+        window.onload = function() { calculate(); };
+    </script>
+</body>
+</html>
