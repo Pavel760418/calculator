@@ -10,7 +10,7 @@ from __future__ import annotations
 import streamlit as st
 
 from configs.settings import APP_TITLE, APP_ICON
-from ui import main_calc, tariffs, compare, scenarios, help as help_page
+from ui import main_calc, tariffs, compare, scenarios, guide, help as help_page
 
 st.set_page_config(page_title=APP_TITLE, page_icon=APP_ICON, layout="wide")
 
@@ -20,6 +20,7 @@ def main() -> None:
     # функции (у всех страниц функция называется render → конфликт путей).
     pages = [
         st.Page(main_calc.render, title="Калькулятор", icon="📊", url_path="calculator", default=True),
+        st.Page(guide.render, title="Инструкция", icon="📘", url_path="guide"),
         st.Page(compare.render, title="Сравнение МП", icon="⚖️", url_path="compare"),
         st.Page(scenarios.render, title="Сценарии", icon="🎯", url_path="scenarios"),
         st.Page(tariffs.render, title="Тарифы маркетплейсов", icon="📦", url_path="tariffs"),
