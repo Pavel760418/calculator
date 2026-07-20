@@ -1,0 +1,46 @@
+{
+  "id": "wildberries",
+  "name": "Wildberries",
+  "source": {
+    "url": "https://seller.wildberries.ru/terms",
+    "note": "Базовые значения комиссий, логистики и хранения по оферте WB Partners. ВНИМАНИЕ: тарифы WB зависят от коэффициента склада и категории и часто меняются. Значения baseline подлежат проверке в разделе 'Тарифы' личного кабинета продавца.",
+    "updated_at": "2026-07-20"
+  },
+  "currency": "RUB",
+  "default_scheme": "FBO",
+  "schemes": ["FBO", "FBS", "DBS"],
+  "acquiring_pct": 0.0,
+  "categories": {
+    "default": {"commission_pct": 18.0},
+    "Красота и здоровье": {"commission_pct": 17.0},
+    "Одежда и обувь": {"commission_pct": 23.0},
+    "Электроника": {"commission_pct": 15.0},
+    "Дом и сад": {"commission_pct": 19.0},
+    "Товары для детей": {"commission_pct": 16.0},
+    "Продукты питания": {"commission_pct": 14.0}
+  },
+  "logistics": {
+    "FBO": {"base_cost": 55.0, "per_liter": 8.0, "per_kg": 0.0, "min_cost": 55.0},
+    "FBS": {"base_cost": 55.0, "per_liter": 8.0, "per_kg": 0.0, "min_cost": 55.0},
+    "DBS": {"base_cost": 0.0, "per_liter": 0.0, "per_kg": 0.0, "min_cost": 0.0}
+  },
+  "storage_per_liter_day": 0.10,
+  "return_logistics": 50.0,
+  "returns_processing": 0.0,
+  "extra_fees": [
+    {
+      "name": "Платная приёмка",
+      "base": "fixed",
+      "rate": 0.0,
+      "amount": 15.0,
+      "note": "WB: приёмка может быть платной в зависимости от коэффициента склада. Проверьте актуальное значение."
+    }
+  ],
+  "history": [
+    {
+      "updated_at": "2026-07-20",
+      "comment": "Инициализация baseline-тарифов Wildberries на основе оферты WB Partners.",
+      "source_url": "https://seller.wildberries.ru/terms"
+    }
+  ]
+}
