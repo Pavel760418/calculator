@@ -63,8 +63,13 @@ streamlit run app.py
 
 1. Запушьте репозиторий на GitHub.
 2. На https://share.streamlit.io → **New app**.
-3. Repository: этот репозиторий, Branch: `main`, Main file path: `app.py`.
+3. Repository: этот репозиторий, Branch: `main`, Main file path: `streamlit_app.py`
+   (значение по умолчанию, которое ищет Streamlit Cloud). Можно указать и `app.py` —
+   оба файла являются рабочими точками входа.
 4. Deploy. `requirements.txt` подхватится автоматически.
+
+> Если при деплое возникает ошибка «streamlit_app.py не найден» — убедитесь, что
+> в поле **Main file path** указан существующий файл (`streamlit_app.py` или `app.py`).
 
 ## Обновление тарифов
 
