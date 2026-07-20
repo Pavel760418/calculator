@@ -1,0 +1,46 @@
+{
+  "id": "ozon",
+  "name": "Ozon",
+  "source": {
+    "url": "https://seller.ozon.com/",
+    "note": "Базовые значения комиссий, логистики, хранения и эквайринга по публичной оферте и справке Ozon Seller. ВНИМАНИЕ: значения являются ориентировочными baseline и подлежат проверке в личном кабинете продавца перед использованием в реальных расчётах.",
+    "updated_at": "2026-07-20"
+  },
+  "currency": "RUB",
+  "default_scheme": "FBO",
+  "schemes": ["FBO", "FBS", "realFBS"],
+  "acquiring_pct": 1.5,
+  "categories": {
+    "default": {"commission_pct": 15.0},
+    "Красота и здоровье": {"commission_pct": 15.0},
+    "Одежда и обувь": {"commission_pct": 20.0},
+    "Электроника": {"commission_pct": 12.0},
+    "Дом и сад": {"commission_pct": 14.0},
+    "Товары для детей": {"commission_pct": 13.0},
+    "Продукты питания": {"commission_pct": 10.0}
+  },
+  "logistics": {
+    "FBO": {"base_cost": 76.0, "per_liter": 12.0, "per_kg": 0.0, "min_cost": 76.0},
+    "FBS": {"base_cost": 76.0, "per_liter": 12.0, "per_kg": 0.0, "min_cost": 76.0},
+    "realFBS": {"base_cost": 0.0, "per_liter": 0.0, "per_kg": 0.0, "min_cost": 0.0}
+  },
+  "storage_per_liter_day": 0.15,
+  "return_logistics": 60.0,
+  "returns_processing": 0.0,
+  "extra_fees": [
+    {
+      "name": "Последняя миля",
+      "base": "price",
+      "rate": 5.5,
+      "amount": 0.0,
+      "note": "Ozon: последняя миля ~5.5% от цены (с ограничениями мин/макс). Проверьте актуальные пороги."
+    }
+  ],
+  "history": [
+    {
+      "updated_at": "2026-07-20",
+      "comment": "Инициализация baseline-тарифов Ozon на основе публичной оферты seller.ozon.com.",
+      "source_url": "https://seller.ozon.com/"
+    }
+  ]
+}
