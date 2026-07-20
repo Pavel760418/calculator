@@ -92,7 +92,7 @@ def render() -> None:
 
         st.subheader("Комиссии по категориям, %")
         cats_edited = st.data_editor(
-            _categories_df(config), num_rows="dynamic", use_container_width=True,
+            _categories_df(config), num_rows="dynamic", width="stretch",
             column_config={
                 "category": st.column_config.TextColumn("Категория"),
                 "commission_pct": st.column_config.NumberColumn("Комиссия, %", min_value=0.0, max_value=100.0),
@@ -102,7 +102,7 @@ def render() -> None:
 
         st.subheader("Логистика по схемам")
         log_edited = st.data_editor(
-            _logistics_df(config), num_rows="dynamic", use_container_width=True,
+            _logistics_df(config), num_rows="dynamic", width="stretch",
             column_config={
                 "scheme": st.column_config.TextColumn("Схема"),
                 "base_cost": st.column_config.NumberColumn("База, ₽", min_value=0.0),
@@ -119,7 +119,7 @@ def render() -> None:
             if col not in fees_df.columns:
                 fees_df[col] = [] if fees_df.empty else ""
         fees_edited = st.data_editor(
-            fees_df, num_rows="dynamic", use_container_width=True,
+            fees_df, num_rows="dynamic", width="stretch",
             column_config={
                 "name": st.column_config.TextColumn("Статья"),
                 "base": st.column_config.SelectboxColumn("База", options=EXTRA_FEE_BASES),
@@ -170,6 +170,6 @@ def render() -> None:
     st.subheader("🕓 История изменений")
     history = load_tariff(mp_id).get("history", [])
     if history:
-        st.dataframe(pd.DataFrame(history[::-1]), hide_index=True, use_container_width=True)
+        st.dataframe(pd.DataFrame(history[::-1]), hide_index=True, width="stretch")
     else:
         st.caption("История пуста.")

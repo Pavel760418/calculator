@@ -34,9 +34,19 @@ _DEFAULTS: dict = {
 
 
 def init_state() -> None:
-    """Идемпотентно задаёт значения по умолчанию в session_state."""
+    """Идемпотентно задаёт значения по умолчанию и сохраняет их между страницами.
+
+    Особенность Streamlit: состояние виджета с ключом «сборщик мусора» удаляет
+    при переходе на другую страницу (виджет не отрисован на предыдущей). Поэтому
+    перед созданием виджетов мы «касаемся» ключей (переприсваиваем сами себе) —
+    это фиксирует значения в session_state и сохраняет ввод пользователя между
+    страницами «Калькулятор», «Сравнение», «Сценарии».
+    """
     for key, value in _DEFAULTS.items():
-        st.session_state.setdefault(key, value)
+        if key in st.session_state:
+            st.session_state[key] = st.session_state[key]
+        else:
+            st.session_state[key] = value
 
 
 def build_product_input() -> ProductInput:

@@ -118,7 +118,7 @@ def render() -> None:
         edited = st.data_editor(
             fees_df,
             num_rows="dynamic",
-            use_container_width=True,
+            width="stretch",
             key=prefix + "fees",
             column_config={
                 "name": st.column_config.TextColumn("Статья"),
@@ -185,7 +185,7 @@ def render() -> None:
         df = pd.DataFrame(
             [{"Статья": n, "Сумма, ₽": fmt_currency(v)} for n, v in rows]
         )
-        st.dataframe(df, hide_index=True, use_container_width=True)
+        st.dataframe(df, hide_index=True, width="stretch")
 
         st.markdown("#### Ключевые показатели")
         kpi = [
@@ -198,11 +198,11 @@ def render() -> None:
             kpi.append(("Точка безубыточности, шт/мес", f"{res.break_even_units:,.0f}".replace(",", " ")))
         st.dataframe(
             pd.DataFrame([{"Показатель": k, "Значение": v} for k, v in kpi]),
-            hide_index=True, use_container_width=True,
+            hide_index=True, width="stretch",
         )
 
     with right:
-        st.plotly_chart(_cost_breakdown_chart(res), use_container_width=True)
+        st.plotly_chart(_cost_breakdown_chart(res), width="stretch")
         if res.break_even_price == float("inf"):
             st.error(
                 "При текущих расходах безубыточность недостижима — расходы превышают "
@@ -230,7 +230,7 @@ def render() -> None:
     comp_df = pd.DataFrame(comp_rows)
     st.dataframe(
         comp_df.style.highlight_max(subset=["Чистая прибыль, ₽"], color="#d1fae5"),
-        hide_index=True, use_container_width=True,
+        hide_index=True, width="stretch",
     )
 
     src = config.get("source", {})

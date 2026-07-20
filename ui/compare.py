@@ -55,16 +55,16 @@ def render() -> None:
 
     st.dataframe(
         df.style.highlight_max(subset=["Чистая прибыль, ₽", "Маржа, %"], color="#d1fae5"),
-        hide_index=True, use_container_width=True,
+        hide_index=True, width="stretch",
     )
 
     fig = go.Figure()
     fig.add_bar(x=df["Маркетплейс"], y=df["Чистая прибыль, ₽"], name="Чистая прибыль, ₽",
                 marker_color="#2c5aa0")
     fig.update_layout(title="Чистая прибыль на единицу по маркетплейсам, ₽", height=380)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     fig2 = go.Figure()
     fig2.add_bar(x=df["Маркетплейс"], y=df["Маржа, %"], name="Маржа, %", marker_color="#10b981")
     fig2.update_layout(title="Маржинальность по маркетплейсам, %", height=380)
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")

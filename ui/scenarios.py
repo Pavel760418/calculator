@@ -77,7 +77,7 @@ def render() -> None:
     st.dataframe(
         df.style.highlight_max(subset=["Чистая прибыль, ₽"], color="#d1fae5")
         .highlight_min(subset=["Чистая прибыль, ₽"], color="#fee2e2"),
-        hide_index=True, use_container_width=True,
+        hide_index=True, width="stretch",
     )
 
     colors = {"Базовый": "#2c5aa0", "Оптимистичный": "#10b981",
@@ -90,7 +90,7 @@ def render() -> None:
         )
     )
     fig.update_layout(title="Чистая прибыль на единицу по сценариям, ₽", height=380)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     base = next(r for r in rows if r["Сценарий"] == "Базовый")
     st.info(
